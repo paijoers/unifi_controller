@@ -17,5 +17,5 @@ sudo systemctl restart rng-tools
 
 # Menginstal Unifi Controller
 # Silahkan edit versi sesuai selera
-UNIFI_VERSION="6.5.51"
+UNIFI_VERSION="7.3.83"
 sudo apt install -y unifi=${UNIFI_VERSION}
