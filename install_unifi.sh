@@ -5,18 +5,18 @@
 echo "deb http://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/100-ubnt-unifi.list
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
 
-sudo apt update
-sudo apt upgrade -y
+sudo apt-get update
+sudo apt-get upgrade -y
 
 # Menginstal rng-tools
-sudo apt install -y rng-tools
+sudo apt-get install -y rng-tools
 sudo touch /etc/default/rng-tools
 sudo sed -i 's/#HRNGDEVICE=\/dev\/hwrng/HRNGDEVICE=\/dev\/urandom/' /etc/default/rng-tools
 sudo systemctl restart rng-tools
 
 # Menghapus haveged
 sudo systemctl stop haveged
-sudo apt purge haveged -y
+sudo apt-get purge haveged -y
 
 # Menginstal Unifi Controller
-sudo apt install -y unifi
+sudo apt-get install -y unifi
