@@ -16,5 +16,6 @@ sudo sed -i 's/#HRNGDEVICE=/dev/hwrng/HRNGDEVICE=/dev/urandom/' /etc/default/rng
 sudo systemctl restart rng-tools
 
 # Menginstal Unifi Controller
+# Silahkan edit versi sesuai selera
 UNIFI_VERSION="6.5.51"
 sudo apt install -y unifi=${UNIFI_VERSION}
