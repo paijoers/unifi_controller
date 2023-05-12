@@ -4,10 +4,7 @@
 echo "deb http://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/100-ubnt-unifi.list
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
 
-# Opsional menambahkan arsitektur armhf
-sudo dpkg --add-architecture armhf
 sudo apt update
-sudo apt install -y libc6:armhf
 sudo apt upgrade -y
 
 # Menginstal rng-tools
@@ -16,6 +13,5 @@ sudo sed -i 's/#HRNGDEVICE=/dev/hwrng/HRNGDEVICE=/dev/urandom/' /etc/default/rng
 sudo systemctl restart rng-tools
 
 # Menginstal Unifi Controller
-# Silahkan edit versi sesuai selera
 # UNIFI_VERSION="7.3.83"
 sudo apt install -y unifi
