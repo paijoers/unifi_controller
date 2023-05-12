@@ -19,5 +19,4 @@ sudo systemctl stop haveged
 sudo apt purge haveged -y
 
 # Menginstal Unifi Controller
-# UNIFI_VERSION="7.3.83"
 sudo apt install -y unifi
