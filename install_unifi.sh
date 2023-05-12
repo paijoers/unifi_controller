@@ -9,6 +9,7 @@ sudo apt upgrade -y
 
 # Menginstal rng-tools
 sudo apt install -y rng-tools
+sudo touch /etc/default/rng-tools
 sudo sed -i 's/#HRNGDEVICE=\/dev\/hwrng/HRNGDEVICE=\/dev\/urandom/' /etc/default/rng-tools
 sudo systemctl restart rng-tools
 
