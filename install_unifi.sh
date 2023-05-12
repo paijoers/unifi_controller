@@ -6,8 +6,8 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
 
 # Opsional menambahkan arsitektur armhf
 sudo dpkg --add-architecture armhf
-sudo apt install -y libc6:armhf
 sudo apt update
+sudo apt install -y libc6:armhf
 sudo apt upgrade -y
 
 # Menginstal rng-tools
