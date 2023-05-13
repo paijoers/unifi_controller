@@ -16,10 +16,10 @@ sudo apt-get autoremove -y
 # Ubiquiti Repository
 echo "deb http://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/100-ubnt-unifi.list
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
-
 sudo apt-get update
 
 
 
 # Menginstal Unifi Controller
-sudo apt-get install -y unifi
+sudo apt-get install unifi -y
+sudo apt --fix-broken install -y
