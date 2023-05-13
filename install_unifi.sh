@@ -18,7 +18,8 @@ echo "deb http://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
 sudo apt-get update
 
-
+# Menginstal java
+apt install openjdk-11-jre-headless
 
 # Menginstal Unifi Controller
 sudo apt-get install unifi -y
