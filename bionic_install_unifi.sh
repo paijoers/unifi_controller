@@ -1,6 +1,6 @@
 #!/bin/bash
 # @nys.pjr 
-# Armbian 20.10 Ubuntu Bionic
+# Tested OS: Armbian 20.10 Ubuntu Bionic
 
 # Hapus file unifi_sysvinit_all.deb jika ada
 if [ -f unifi_sysvinit_all.deb ]; then
