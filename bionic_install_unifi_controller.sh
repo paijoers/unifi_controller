@@ -2,19 +2,19 @@
 # @nys.pjr 
 # Tested OS: Armbian 20.10 Ubuntu Bionic
 
-# Hapus file unifi_sysvinit_all.deb jika ada
+# Remove unifi_sysvinit_all.deb file if it exists
 if [ -f unifi_sysvinit_all.deb ]; then
     rm unifi_sysvinit_all.deb
 fi
 
-# Mengatur path java
+# Set Java path
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export PATH=$PATH:$JAVA_HOME/bin
 
-# Memperbarui paket
+# Update packages
 sudo apt update
 
-# Menginstal rng-tools
+# Install rng-tools
 sudo apt install -y rng-tools
 sudo touch /etc/default/rng-tools
 sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
@@ -24,20 +24,20 @@ sudo systemctl restart rng-tools
 sudo systemctl stop haveged
 sudo systemctl disable haveged
 
-# Memasang dependensi yang diperlukan
+# Install necessary dependencies
 sudo apt install -y openjdk-11-jre-headless mongodb
 
-# Mengunduh UniFi Controller versi 7.3.83
+# Download UniFi Controller version 7.3.83
 wget -c https://dl.ui.com/unifi/7.3.83/unifi_sysvinit_all.deb
 
-# Memasang UniFi Controller
+# Install UniFi Controller
 sudo dpkg -i unifi_sysvinit_all.deb
 
-# Menginstal Unifi Controller
+# Install Unifi Controller
 sudo apt install unifi -y
 
-# Menjalankan UniFi Controller
+# Start UniFi Controller
 sudo systemctl start unifi
 
-# Mengatur UniFi Controller untuk memulai pada saat boot
+# Enable UniFi Controller to start on boot
 sudo systemctl enable unifi
