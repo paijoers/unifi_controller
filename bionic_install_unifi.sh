@@ -28,7 +28,7 @@ sudo systemctl disable haveged
 # Memasang dependensi yang diperlukan
 sudo apt install -y openjdk-11-jre-headless mongodb
 
-# Mengunduh UniFi Controller
+# Mengunduh UniFi Controller versi 7.3.83
 wget -c https://dl.ui.com/unifi/7.3.83/unifi_sysvinit_all.deb
 
 # Memasang UniFi Controller
