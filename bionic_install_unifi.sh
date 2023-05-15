@@ -8,7 +8,7 @@ if [ -f unifi_sysvinit_all.deb ]; then
     rm unifi_sysvinit_all.deb
 fi
 
-# Mengatur variabel lingkungan JAVA_HOME
+# Mengatur path java
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export PATH=$PATH:$JAVA_HOME/bin
 
