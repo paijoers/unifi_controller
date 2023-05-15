@@ -6,7 +6,7 @@
 echo "UniFi Controller Installation"
 echo "---------------------------"
 echo "1. Install UniFi Controller via apt"
-echo "2. Manual Install"
+echo "2. Manual Install (Install UniFi Controller without using apt)"
 echo "3. Cancel"
 echo "4. Help"
 read -p "Enter your choice (1-4): " choice
@@ -54,7 +54,7 @@ case $choice in
     4)
         echo "Help:"
         echo "1. Install UniFi Controller via apt: Installs UniFi Controller using the official repository."
-        echo "2. Manual Install: If you want to update the version, you need to download and install it manually using the .deb package."
+        echo "2. Manual Install: Allows you to update UniFi Controller by downloading and manually installing the .deb package."
         echo "3. Cancel: Exits the installation process without making any changes."
         echo "4. Help: Displays this help message."
         exit 0
