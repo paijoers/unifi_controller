@@ -24,9 +24,11 @@ read -p "Do you want to install UniFi Controller via apt? (y/n): " choice
 if [[ $choice =~ ^[Yy]$ ]]; then
     # Add UniFi repository key
     wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-    echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+    wget -O - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
+    wget -O - https://dl.ui.com/unifi/unifi-repo.gpg | sudo apt-key add -
     
     # Add UniFi repository
+    echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
     echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
     
     # Update packages again
