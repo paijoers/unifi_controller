@@ -4,7 +4,6 @@
 
 # Hapus file unifi_sysvinit_all.deb jika ada
 if [ -f unifi_sysvinit_all.deb ]; then
-    # Jika file sudah ada, hapus file tersebut
     rm unifi_sysvinit_all.deb
 fi
 
