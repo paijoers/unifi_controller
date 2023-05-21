@@ -21,13 +21,39 @@ install_unifi_apt() {
 
 # Function to install UniFi Controller manually
 install_unifi_manual() {
+    # Check if unifi_sysvinit_all.deb file exists
+    if [ -f unifi_sysvinit_all.deb ]; then
+      echo "Previous UniFi Controller package found. Removing..."
+      rm unifi_sysvinit_all.deb
+    fi
+
     read -p "Enter the UniFi Controller version you want to install (e.g., 7.3.83): " version
     download_url="https://dl.ui.com/unifi/$version/unifi_sysvinit_all.deb"
     response=$(curl -s -o /dev/null -I -w "%{http_code}" $download_url)
     if [[ $response -eq 200 ]]; then
+        # Download UniFi Controller package
         wget -c $download_url -O unifi_sysvinit_all.deb
+        
+        # Install dependencies (Java and MongoDB)
+        if [[ "$version" < "7.3" ]]; then
+            # Install Java 8
+            sudo apt install -y openjdk-8-jre-headless
+        else
+            # Install Java 11
+            sudo apt install -y openjdk-11-jre-headless
+        fi
+        
+        # Install MongoDB
+        wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+        echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+        sudo apt update
+        sudo apt install -y mongodb-org
+
+        # Install UniFi Controller
         sudo dpkg -i unifi_sysvinit_all.deb
         sudo apt install -fy
+        
+        # Install rng-tools
         sudo apt install -y rng-tools
         sudo systemctl stop haveged
         sudo systemctl disable haveged
@@ -36,6 +62,7 @@ install_unifi_manual() {
         exit 1
     fi
 }
+
 
 # Function to clean up UniFi Controller
 cleanup_unifi() {
