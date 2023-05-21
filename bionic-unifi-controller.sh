@@ -18,6 +18,9 @@ install_unifi_apt() {
     sudo systemctl restart rng-tools
     sudo systemctl stop haveged
     sudo systemctl disable haveged
+    sudo systemctl start unifi
+    sudo systemctl enable unifi
+    echo "UniFi Controller has been installed and started."
 }
 
 # Function to install UniFi Controller manually
@@ -60,6 +63,9 @@ install_unifi_manual() {
         sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
         sudo systemctl stop haveged
         sudo systemctl disable haveged
+        sudo systemctl start unifi
+        sudo systemctl enable unifi
+        echo "UniFi Controller has been installed and started."
     else
         echo "URL is invalid or not accessible. Aborting installation."
         exit 1
@@ -131,8 +137,3 @@ case $choice in
         exit 1
         ;;
 esac
-
-sudo systemctl start unifi
-sudo systemctl enable unifi
-
-echo "UniFi Controller has been installed and started."
