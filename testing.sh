@@ -50,7 +50,12 @@ install_unifi_apt() {
 # Function for manual UniFi Controller installation
 manual_install_unifi() {
     read -p "Enter the UniFi Controller version you want to install (e.g., 7.3.83): " version
-
+    
+    # Check if unifi_sysvinit_all.deb file exists
+        if [ -f unifi_sysvinit_all.deb ]; then
+            rm unifi_sysvinit_all.deb
+        fi
+    
     # Construct the download URL
     download_url="https://dl.ui.com/unifi/$version/unifi_sysvinit_all.deb"
 
