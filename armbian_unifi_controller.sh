@@ -13,8 +13,13 @@ install_unifi_apt() {
     export PATH=$PATH:$JAVA_HOME/bin
     sudo apt install -y unifi
     sudo apt install -y rng-tools
-    sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
-    sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
+    if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
+       # Replace the line with the new value
+       sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
+    else
+       # Add the line if it doesn't exist
+       sudo echo "HRNGDEVICE=/dev/urandom" | sudo tee -a /etc/default/rng-tools
+    fi
     sudo systemctl restart rng-tools
     sudo systemctl stop haveged
     sudo systemctl disable haveged
@@ -59,8 +64,13 @@ install_unifi_manual() {
         
         # Install rng-tools
         sudo apt install -y rng-tools
-        sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
-        sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
+        if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
+           # Replace the line with the new value
+           sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
+        else
+           # Add the line if it doesn't exist
+           sudo echo "HRNGDEVICE=/dev/urandom" | sudo tee -a /etc/default/rng-tools
+        fi
         sudo systemctl stop haveged
         sudo systemctl disable haveged
         sudo systemctl start unifi
