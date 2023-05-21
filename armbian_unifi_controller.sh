@@ -44,7 +44,7 @@ install_unifi_manual() {
         wget -c $download_url -O unifi_sysvinit_all.deb
         
         # Install dependencies (Java and MongoDB)
-        if [[ "$version" < "7.3" ]]; then
+        if [[ "$version" < "7.3.76" ]]; then
             # Install Java 8
             sudo apt install -y openjdk-8-jre-headless
         else
@@ -87,7 +87,7 @@ install_unifi_manual() {
 cleanup_unifi() {
     read -p "Do you want to remove Java as well? (y/n): " remove_java
     if [[ $remove_java == "y" ]]; then
-        sudo apt purge -y openjdk*
+        sudo apt purge -y openjdk-*
         sudo apt autoremove -y
     fi
 
