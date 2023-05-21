@@ -2,8 +2,8 @@
 # @nys.pjr 
 # Tested OS: Armbian 20.10 Ubuntu Bionic
 
-# Function to install UniFi Controller
-install_unifi() {
+# Function to install UniFi Controller via apt
+install_unifi_apt() {
     # Add key
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
     wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
@@ -47,36 +47,72 @@ install_unifi() {
     sudo systemctl disable haveged
 }
 
+# Function for manual UniFi Controller installation
+manual_install_unifi() {
+    read -p "Enter the UniFi Controller version you want to install (e.g., 7.3.83): " version
+
+    # Construct the download URL
+    download_url="https://dl.ui.com/unifi/$version/unifi_sysvinit_all.deb"
+
+    # Check if the URL is valid
+    response=$(curl -s -o /dev/null -I -w "%{http_code}" $download_url)
+    if [[ $response -eq 200 ]]; then
+        # Download UniFi Controller package
+        wget -c $download_url -O unifi_sysvinit_all.deb
+
+        # Install UniFi Controller package
+        sudo dpkg -i unifi_sysvinit_all.deb
+        sudo apt --fix-broken install -y
+
+        # Install dependencies
+        if [[ "$unifi_version" < "7.3" ]]; then
+            # Install Java 8
+            sudo apt install -y openjdk-8-jre-headless
+            export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)
+        else
+            # Install Java 11
+            sudo apt install -y openjdk-11-jre-headless
+            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
+        fi
+
+        # Set Java path
+        export PATH=$PATH:$JAVA_HOME/bin
+
+        # Enable rng-tools service
+        sudo systemctl enable rng-tools
+        sudo systemctl start rng-tools
+
+        # Disable haveged
+        sudo systemctl stop haveged
+        sudo systemctl disable haveged
+    else
+        echo "URL is invalid or not accessible. Aborting installation."
+        exit 1
+    fi
+}
+
 # Function to clean up UniFi Controller
 cleanup_unifi() {
-    # Remove UniFi Controller packages and files
+    # Stop UniFi Controller service
+    sudo systemctl stop unifi
+
+    # Remove UniFi Controller packages
     sudo apt purge -y unifi
-    sudo apt autoremove -y
+
+    # Remove UniFi Controller files
     sudo rm -rf /usr/lib/unifi
     sudo rm -rf /var/lib/unifi
     sudo rm -rf /var/log/unifi
     sudo rm -rf /var/run/unifi
     sudo rm -rf /etc/unifi
 
-    # Ask if user wants to remove Java
-    read -p "Do you want to remove Java? (y/n): " remove_java
-    if [[ "$remove_java" == "y" ]]; then
-        if [[ "$unifi_version" < "7.3" ]]; then
-            # Remove Java 8
-            sudo apt purge -y openjdk-8-jre-headless
-        else
-            # Remove Java 11
-            sudo apt purge -y openjdk-11-jre-headless
-        fi
-    fi
+    # Enable haveged
+    sudo systemctl enable haveged
+    sudo systemctl start haveged
 
     # Remove rng-tools
     sudo apt purge -y rng-tools
     sudo rm /etc/default/rng-tools
-
-    # Enable haveged
-    sudo systemctl enable haveged
-    sudo systemctl start haveged
 
     echo "UniFi Controller has been successfully removed."
     exit 0
@@ -85,16 +121,25 @@ cleanup_unifi() {
 # Show menu and ask for user input
 echo "UniFi Controller Installation"
 echo "---------------------------"
-echo "1. Install UniFi Controller"
-echo "2. Clean up UniFi Controller"
-read -p "Please enter your choice (1 or 2): " choice
+echo "1. Install UniFi Controller via apt"
+echo "2. Manual Install (Install UniFi Controller without using apt)"
+echo "3. Clean Up (Remove installed UniFi Controller packages)"
+echo "4. Exit"
+read -p "Enter your choice (1-4): " choice
 
 case $choice in
     1)
-        install_unifi
+        install_unifi_apt
         ;;
     2)
+        manual_install_unifi
+        ;;
+    3)
         cleanup_unifi
+        ;;
+    4)
+        echo "Exiting..."
+        exit 0
         ;;
     *)
         echo "Invalid choice. Exiting."
