@@ -65,7 +65,7 @@ cleanup_unifi() {
 
     # Remove Java 8 if installed
     if [[ -n $(java -version 2>&1 | grep "1.8") ]]; then
-        sudo apt purge -y openjdk-8-*
+        sudo apt purge -y openjdk-8-$(dpkg --print-architecture)
     fi
 
     echo "UniFi Controller has been successfully removed."
