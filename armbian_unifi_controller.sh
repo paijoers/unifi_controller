@@ -87,21 +87,21 @@ install_unifi_manual() {
 cleanup_unifi() {
     read -p "Do you want to remove Java as well? (y/n): " remove_java
     if [[ $remove_java == "y" ]]; then
-        sudo apt purge -y openjdk-*
+        sudo apt purge -y openjdk*
         sudo apt autoremove -y
     fi
     
     sudo systemctl stop unifi
     sudo service mongod stop
     sudo apt purge -y unifi
-    sudo apt purge mongodb-org*
+    sudo apt purge mongodb*
     sudo rm -rf /usr/lib/unifi
     sudo rm -rf /var/lib/unifi
     sudo rm -rf /var/log/unifi
     sudo rm -rf /var/run/unifi
     sudo rm -rf /etc/unifi
-    sudo rm /etc/apt/sources.list.d/mongodb-org-\*
-    sudo rm /etc/apt/sources.list.d/unifi.list
+    sudo rm /etc/apt/sources.list.d/mongodb*
+    sudo rm /etc/apt/sources.list.d/unifi*
     sudo systemctl enable haveged
     sudo systemctl start haveged
     sudo apt purge -y rng-tools
