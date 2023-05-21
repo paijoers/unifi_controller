@@ -109,8 +109,8 @@ cleanup_unifi() {
 }
 
 # Show menu and ask for user input
-echo -e "\nUniFi Controller Installation"
-echo -e "---------------------------\n"
+echo -e "\n\nUniFi Controller Installation"
+echo -e "---------------------------\n\n"
 echo "1. Install UniFi Controller via apt"
 echo "2. Manual Install (Install UniFi Controller without using apt)"
 echo "3. Clean Up (Remove installed UniFi Controller packages)"
