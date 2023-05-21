@@ -28,6 +28,7 @@ install_unifi() {
         export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
     fi
 
+    # Set Java path
     export PATH=$PATH:$JAVA_HOME/bin
 
     # Install UniFi Controller
@@ -35,9 +36,11 @@ install_unifi() {
 
     # Install rng-tools
     sudo apt install -y rng-tools
-    sudo touch /etc/default/rng-tools
+
+    # Enable rng-tools service
     sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
-    sudo systemctl restart rng-tools
+    sudo systemctl enable rng-tools
+    sudo systemctl start rng-tools
 
     # Disable haveged
     sudo systemctl stop haveged
@@ -55,6 +58,18 @@ cleanup_unifi() {
     sudo rm -rf /var/run/unifi
     sudo rm -rf /etc/unifi
 
+    # Ask if user wants to remove Java
+    read -p "Do you want to remove Java? (y/n): " remove_java
+    if [[ "$remove_java" == "y" ]]; then
+        if [[ "$unifi_version" < "7.3" ]]; then
+            # Remove Java 8
+            sudo apt purge -y openjdk-8-jre-headless
+        else
+            # Remove Java 11
+            sudo apt purge -y openjdk-11-jre-headless
+        fi
+    fi
+
     # Remove rng-tools
     sudo apt purge -y rng-tools
     sudo rm /etc/default/rng-tools
@@ -63,11 +78,6 @@ cleanup_unifi() {
     sudo systemctl enable haveged
     sudo systemctl start haveged
 
-    # Remove Java 8 if installed
-    if [[ -n $(java -version 2>&1 | grep "1.8") ]]; then
-        sudo apt purge -y openjdk-8-$(dpkg --print-architecture)
-    fi
-
     echo "UniFi Controller has been successfully removed."
     exit 0
 }
@@ -75,50 +85,16 @@ cleanup_unifi() {
 # Show menu and ask for user input
 echo "UniFi Controller Installation"
 echo "---------------------------"
-echo "1. Install UniFi Controller via apt"
-echo "2. Manual Install (Install UniFi Controller without using apt)"
-echo "3. Clean Up (Remove installed UniFi Controller packages)"
-echo "4. Cancel"
-echo "5. Help"
-read -p "Enter your choice (1-5): " choice
+echo "1. Install UniFi Controller"
+echo "2. Clean up UniFi Controller"
+read -p "Please enter your choice (1 or 2): " choice
 
 case $choice in
     1)
         install_unifi
         ;;
     2)
-        read -p "Enter the UniFi Controller version you want to install (e.g., 7.3.83): " version
-
-        # Construct the download URL
-        download_url="https://dl.ui.com/unifi/$version/unifi_sysvinit_all.deb"
-
-        # Check if the URL is valid
-        response=$(curl -s -o /dev/null -I -w "%{http_code}" $download_url)
-        if [[ $response -eq 200 ]]; then
-            # Download UniFi Controller package
-            wget -c $download_url -O unifi_sysvinit_all.deb
-
-            install_unifi
-        else
-            echo "URL is invalid or not accessible. Aborting installation."
-            exit 1
-        fi
-        ;;
-    3)
         cleanup_unifi
-        ;;
-    4)
-        echo "Installation canceled."
-        exit 0
-        ;;
-    5)
-        echo "Help:"
-        echo "1. Install UniFi Controller via apt: Installs UniFi Controller using the official repository."
-        echo "2. Manual Install: Allows you to update UniFi Controller by downloading and manually installing the .deb package."
-        echo "3. Clean Up: Removes installed UniFi Controller packages and files."
-        echo "4. Cancel: Exits the installation process without making any changes."
-        echo "5. Help: Displays this help message."
-        exit 0
         ;;
     *)
         echo "Invalid choice. Exiting."
