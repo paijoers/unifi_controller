@@ -90,9 +90,11 @@ cleanup_unifi() {
         sudo apt purge -y openjdk-*
         sudo apt autoremove -y
     fi
-
+    
+    sudo systemctl stop unifi
+    sudo service mongod stop
     sudo apt purge -y unifi
-    sudo apt autoremove -y
+    sudo apt purge mongodb-org*
     sudo rm -rf /usr/lib/unifi
     sudo rm -rf /var/lib/unifi
     sudo rm -rf /var/log/unifi
