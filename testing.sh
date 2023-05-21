@@ -9,6 +9,7 @@ install_unifi() {
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 
     # Add UniFi repository
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 4B7C549A058F8B6B
     echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
 
     # Update packages
