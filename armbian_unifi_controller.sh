@@ -87,8 +87,7 @@ install_unifi_manual() {
 cleanup_unifi() {
     read -p "Do you want to remove Java as well? (y/n): " remove_java
     if [[ $remove_java == "y" ]]; then
-        sudo apt purge -y openjdk-8-\*
-        sudo apt purge -y openjdk-11-\*
+        sudo apt purge -y openjdk*
         sudo apt autoremove -y
     fi
 
