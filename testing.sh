@@ -83,3 +83,28 @@ case $choice in
         exit 0
         ;;
     *)
+        echo "Invalid choice. Exiting."
+        exit 1
+        ;;
+esac
+
+# Update packages
+sudo apt update
+
+# Install rng-tools
+sudo apt install -y rng-tools
+sudo touch /etc/default/rng-tools
+sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
+sudo systemctl restart rng-tools
+
+# Disable haveged
+sudo systemctl stop haveged
+sudo systemctl disable haveged
+
+# Start UniFi Controller
+sudo systemctl start unifi
+
+# Enable UniFi Controller to start on boot
+sudo systemctl enable unifi
+
+echo "UniFi Controller has been installed and started."
