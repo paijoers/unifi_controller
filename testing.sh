@@ -87,7 +87,6 @@ cleanup_unifi() {
     sudo systemctl enable haveged
     sudo systemctl start haveged
     sudo apt purge -y rng-tools
-    #sudo rm /etc/default/rng-tools
     sudo apt autoremove
     echo "UniFi Controller has been successfully removed."
     exit 0
