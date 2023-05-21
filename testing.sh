@@ -55,6 +55,8 @@ install_unifi_manual() {
         
         # Install rng-tools
         sudo apt install -y rng-tools
+        sudo touch /etc/default/rng-tools
+        sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
         sudo systemctl stop haveged
         sudo systemctl disable haveged
     else
