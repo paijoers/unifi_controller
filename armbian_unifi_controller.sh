@@ -77,7 +77,7 @@ install_unifi_manual() {
         sudo systemctl enable unifi
         echo "UniFi Controller has been installed and started."
     else
-        echo "URL is invalid or not accessible. Aborting installation."
+        echo "Invalid version or Link not found. Aborting installation."
         exit 1
     fi
 }
