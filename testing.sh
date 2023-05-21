@@ -9,7 +9,6 @@ install_unifi() {
     wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
     
     # Add MongoDB repository
-    #echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 
     # Add UniFi repository
@@ -22,13 +21,13 @@ install_unifi() {
     if [[ "$unifi_version" < "7.3" ]]; then
         # Install Java 8
         sudo apt install -y openjdk-8-jre-headless
+        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-<arch>
     else
         # Install Java 11
         sudo apt install -y openjdk-11-jre-headless
+        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-<arch>
     fi
 
-    # Set Java path
-    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
     export PATH=$PATH:$JAVA_HOME/bin
 
     # Install UniFi Controller
@@ -56,13 +55,18 @@ cleanup_unifi() {
     sudo rm -rf /var/run/unifi
     sudo rm -rf /etc/unifi
 
+    # Remove rng-tools
+    sudo apt purge -y rng-tools
+    sudo rm /etc/default/rng-tools
+
     # Enable haveged
     sudo systemctl enable haveged
     sudo systemctl start haveged
 
-    # Remove rng-tools
-    sudo apt purge -y rng-tools
-    sudo rm /etc/default/rng-tools
+    # Remove Java 8 if installed
+    if [[ -n $(java -version 2>&1 | grep "1.8") ]]; then
+        sudo apt purge -y openjdk-8-*
+    fi
 
     echo "UniFi Controller has been successfully removed."
     exit 0
