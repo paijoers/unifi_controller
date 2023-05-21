@@ -1,6 +1,7 @@
 #!/bin/bash
+# @nys.pjr 
+# Tested OS: Armbian 20.10 Ubuntu Bionic
 
-# Function to install UniFi Controller via apt
 install_unifi_apt() {
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
     wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
