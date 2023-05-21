@@ -2,16 +2,7 @@
 # @nys.pjr 
 # Tested OS: Armbian 20.10 Ubuntu Bionic
 
-install_unifi_apt() {
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
-    wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-    echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-    echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
-    sudo apt update
-    sudo apt install -y openjdk-11-jre-headless
-    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
-    export PATH=$PATH:$JAVA_HOME/bin
-    sudo apt install -y unifi
+install_rng_tools() {
     sudo apt install -y rng-tools
     if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
        # Replace the line with the new value
@@ -23,6 +14,19 @@ install_unifi_apt() {
     sudo systemctl restart rng-tools
     sudo systemctl stop haveged
     sudo systemctl disable haveged
+}
+
+install_unifi_apt() {
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
+    wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+    echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+    echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
+    sudo apt update
+    sudo apt install -y openjdk-11-jre-headless
+    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
+    export PATH=$PATH:$JAVA_HOME/bin
+    install_rng_tools
+    sudo apt install -y unifi
     sudo systemctl start unifi
     sudo systemctl enable unifi
     echo "UniFi Controller has been installed and started."
@@ -60,19 +64,8 @@ install_unifi_manual() {
 
         # Install UniFi Controller
         sudo dpkg -i unifi_sysvinit_all.deb
+        install_rng_tools
         sudo apt install -fy
-        
-        # Install rng-tools
-        sudo apt install -y rng-tools
-        if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
-           # Replace the line with the new value
-           sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
-        else
-           # Add the line if it doesn't exist
-           sudo echo "HRNGDEVICE=/dev/urandom" | sudo tee -a /etc/default/rng-tools
-        fi
-        sudo systemctl stop haveged
-        sudo systemctl disable haveged
         sudo systemctl start unifi
         sudo systemctl enable unifi
         echo "UniFi Controller has been installed and started."
