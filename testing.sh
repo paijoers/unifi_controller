@@ -7,9 +7,10 @@ echo "UniFi Controller Installation"
 echo "---------------------------"
 echo "1. Install UniFi Controller via apt"
 echo "2. Manual Install (Install UniFi Controller without using apt)"
-echo "3. Cancel"
-echo "4. Help"
-read -p "Enter your choice (1-4): " choice
+echo "3. Clean Up (Remove installed UniFi Controller packages)"
+echo "4. Cancel"
+echo "5. Help"
+read -p "Enter your choice (1-5): " choice
 
 case $choice in
     1)
@@ -71,15 +72,39 @@ case $choice in
         fi
         ;;
     3)
-        echo "Installation canceled."
+        echo "Cleaning up UniFi Controller installation..."
+
+        # Stop UniFi Controller service
+        sudo systemctl stop unifi
+
+        # Uninstall UniFi Controller
+        sudo apt purge -y unifi
+
+        # Remove UniFi repository
+        sudo rm /etc/apt/sources.list.d/unifi.list
+
+        # Remove MongoDB
+        sudo apt purge -y mongodb-org mongodb-org-server mongodb-org-shell mongodb-org-mongos mongodb-org-tools
+
+        # Remove Java, rng-tools, and enable haveged
+        sudo apt purge -y openjdk-11-jre-headless rng-tools
+        sudo systemctl enable haveged
+        sudo systemctl start haveged
+
+        echo "UniFi Controller has been successfully removed."
         exit 0
         ;;
     4)
+        echo "Installation canceled."
+        exit 0
+        ;;
+    5)
         echo "Help:"
         echo "1. Install UniFi Controller via apt: Installs UniFi Controller using the official repository."
         echo "2. Manual Install: Allows you to update UniFi Controller by downloading and manually installing the .deb package."
-        echo "3. Cancel: Exits the installation process without making any changes."
-        echo "4. Help: Displays this help message."
+        echo "3. Clean Up: Removes installed UniFi Controller packages and files."
+        echo "4. Cancel: Exits the installation process without making any changes."
+        echo "5. Help: Displays this help message."
         exit 0
         ;;
     *)
@@ -88,13 +113,18 @@ case $choice in
         ;;
 esac
 
+# Set Java path
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export PATH=$PATH:$JAVA_HOME/bin
+
 # Update packages
 sudo apt update
 
-# Install rng-tools
-sudo apt install -y rng-tools
+# Configure rng-tools
 sudo touch /etc/default/rng-tools
 sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
+
+# Restart rng-tools service
 sudo systemctl restart rng-tools
 
 # Disable haveged
