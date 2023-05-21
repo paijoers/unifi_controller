@@ -4,12 +4,14 @@
 
 # Function to install UniFi Controller
 install_unifi() {
-    # Add UniFi repository key
+    # Add key
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
     wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+    
+    # Add MongoDB repository
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 
     # Add UniFi repository
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
     echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
 
     # Update packages
