@@ -21,11 +21,11 @@ install_unifi() {
     if [[ "$unifi_version" < "7.3" ]]; then
         # Install Java 8
         sudo apt install -y openjdk-8-jre-headless
-        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-<arch>
+        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)
     else
         # Install Java 11
         sudo apt install -y openjdk-11-jre-headless
-        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-<arch>
+        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
     fi
 
     export PATH=$PATH:$JAVA_HOME/bin
