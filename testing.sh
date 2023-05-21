@@ -12,7 +12,6 @@ install_unifi_apt() {
     export PATH=$PATH:$JAVA_HOME/bin
     sudo apt install -y unifi
     sudo apt install -y rng-tools
-    sudo touch /etc/default/rng-tools
     sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
     sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
     sudo systemctl restart rng-tools
@@ -56,7 +55,6 @@ install_unifi_manual() {
         
         # Install rng-tools
         sudo apt install -y rng-tools
-        sudo touch /etc/default/rng-tools
         sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
         sudo sed -i 's|^#HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|' /etc/default/rng-tools
         sudo systemctl stop haveged
