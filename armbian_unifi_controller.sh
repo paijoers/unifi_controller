@@ -51,9 +51,13 @@ install_unifi_manual() {
         if [[ "$version" < "7.3.76" ]]; then
             # Install Java 8
             sudo apt install -y openjdk-8-jre-headless
+            export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)
+            export PATH=$PATH:$JAVA_HOME/bin
         else
             # Install Java 11
             sudo apt install -y openjdk-11-jre-headless
+            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
+            export PATH=$PATH:$JAVA_HOME/bin
         fi
         
         # Install MongoDB
