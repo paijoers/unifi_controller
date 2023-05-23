@@ -5,7 +5,7 @@
 set -e
 
 install_rng_tools() {
-    sudo apt install -y rng-tools
+    sudo apt install -y rng-tools || { echo "Failed to install rng-tools."; exit 1; }
     if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
         # Replace the line with the new value
         sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
