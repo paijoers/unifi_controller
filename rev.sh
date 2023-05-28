@@ -44,26 +44,6 @@ install_unifi_manual() {
     if [[ $response -eq 200 ]]; then
         # Download UniFi Controller package
         wget -c $download_url -O unifi_sysvinit_all.deb
-        
-        # Install dependencies (Java and MongoDB)
-        if [[ "$version" < "7.3.76" ]]; then
-            # Install Java 8
-            sudo apt-get install -y openjdk-8-jre-headless
-            export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)
-            export PATH=$PATH:$JAVA_HOME/bin
-        else
-            # Install Java 11
-            sudo apt-get install -y openjdk-11-jre-headless
-            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
-            export PATH=$PATH:$JAVA_HOME/bin
-        fi
-        
-        # Install MongoDB
-        wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-        echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-        sudo apt-get update
-        sudo apt-get install -y mongodb
-
         # Install UniFi Controller
         sudo dpkg -i unifi_sysvinit_all.deb
         install_rng_tools
