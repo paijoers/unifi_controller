@@ -25,9 +25,19 @@ install_unifi_apt() {
     install_rng_tools
     sudo apt-get install -y unifi
     sudo apt-get install -fy
-    sudo systemctl start unifi
-    sudo systemctl enable unifi
-    echo "UniFi Controller has been installed and started."
+    
+    # Start UniFi Controller service
+    if sudo systemctl start unifi; then
+       echo "UniFi Controller service started successfully."
+       # Enable UniFi Controller service at boot
+       if sudo systemctl enable unifi; then
+          echo "UniFi Controller service enabled successfully."
+       else
+          echo "Failed to enable UniFi Controller service at boot."
+       fi
+    else
+       echo "Failed to start UniFi Controller service."
+    fi
 }
 
 # Function to install UniFi Controller manually
@@ -70,13 +80,23 @@ install_unifi_manual() {
         sudo dpkg -i unifi_sysvinit_all.deb
         install_rng_tools
         sudo apt-get install -fy
-        sudo systemctl start unifi
-        sudo systemctl enable unifi
-        echo "UniFi Controller has been installed and started."
-    else
-        echo "Invalid version or Link not found. Aborting installation."
-        exit 1
-    fi
+        
+        # Start UniFi Controller service
+        if sudo systemctl start unifi; then
+           echo "UniFi Controller service started successfully."
+           # Enable UniFi Controller service at boot
+           if sudo systemctl enable unifi; then
+              echo "UniFi Controller service enabled successfully."
+           else
+              echo "Failed to enable UniFi Controller service at boot."
+           fi
+         else
+           echo "Failed to start UniFi Controller service."
+         fi
+     else
+       echo "Invalid version or Link not found. Aborting installation."
+       exit 1
+     fi
 }
 
 
