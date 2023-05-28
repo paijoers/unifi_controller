@@ -3,7 +3,7 @@
 # Tested OS: Armbian 20.10 (Ubuntu Bionic) & Armbian 21.08.1 (Ubuntu Focal)
 
 install_rng_tools() {
-    sudo apt install -y rng-tools
+    sudo apt-get install -y rng-tools
     if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
        # Replace the line with the new value
        sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
@@ -21,11 +21,11 @@ install_unifi_apt() {
     wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
     echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
-    sudo apt update
+    sudo apt-get update
     install_rng_tools
-    sudo apt install -y unifi
-    sudo apt install -fy
-    # sudo apt install -y openjdk-11-jre-headless
+    sudo apt-get install -y unifi
+    sudo apt-get install -fy
+    # sudo apt-get install -y openjdk-11-jre-headless
     # Get the Java installation path
     java_path=$(update-java-alternatives --list | awk '/java-/{print $3}')
     # Check if Java is installed
@@ -62,12 +62,12 @@ install_unifi_manual() {
         # Install dependencies (Java and MongoDB)
         if [[ "$version" < "7.3.76" ]]; then
             # Install Java 8
-            sudo apt install -y openjdk-8-jre-headless
+            sudo apt-get install -y openjdk-8-jre-headless
             export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)
             export PATH=$PATH:$JAVA_HOME/bin
         else
             # Install Java 11
-            sudo apt install -y openjdk-11-jre-headless
+            sudo apt-get install -y openjdk-11-jre-headless
             export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
             export PATH=$PATH:$JAVA_HOME/bin
         fi
@@ -75,13 +75,13 @@ install_unifi_manual() {
         # Install MongoDB
         wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
         echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-        sudo apt update
-        sudo apt install -y mongodb
+        sudo apt-get update
+        sudo apt-get install -y mongodb
 
         # Install UniFi Controller
         sudo dpkg -i unifi_sysvinit_all.deb
         install_rng_tools
-        sudo apt install -fy
+        sudo apt-get install -fy
         sudo systemctl start unifi
         sudo systemctl enable unifi
         echo "UniFi Controller has been installed and started."
@@ -100,7 +100,7 @@ cleanup_unifi() {
         if [[ -n $java_packages ]]; then
             echo "Uninstalling Java packages..."
             sudo apt-get remove --purge -y $java_packages
-            sudo apt autoremove -y
+            sudo apt-get autoremove -y
         else
             echo "No Java packages installed."
         fi
