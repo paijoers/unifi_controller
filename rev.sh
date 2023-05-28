@@ -85,6 +85,7 @@ cleanup_unifi() {
     # Stop UniFi Controller service
     echo -e "Stopping unifi services..\n"
     sudo systemctl stop unifi
+    sudo systemctl disable unifi
 
     # Remove java
     read -p "Do you want to remove Java as well? (y/n): " remove_java
@@ -127,7 +128,6 @@ cleanup_unifi() {
         sudo systemctl start haveged
         # Remove rng-tools packages
         echo "Uninstalling rng-tools packages..."
-        # sudo rm /etc/default/rng-tools
         sudo apt-get remove --purge -y $rngtools_packages
     else
         echo "No rng-tools packages installed."
@@ -139,8 +139,6 @@ cleanup_unifi() {
     # Check if there are UniFi Controller packages installed
     if [[ -n $unifi_packages ]]; then
         echo "Uninstalling UniFi Controller packages..."
-        # Disable UniFi Controller service at boot
-        sudo systemctl disable unifi
         # Remove UniFi Controller packages
         sudo rm /etc/apt/sources.list.d/unifi*
         sudo apt-get remove --purge -y $unifi_packages
