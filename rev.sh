@@ -95,15 +95,17 @@ install_unifi_manual() {
 # Function to clean up UniFi Controller
 cleanup_unifi() {
     read -p "Do you want to remove Java as well? (y/n): " remove_java
-if [[ $remove_java == "y" ]]; then
+    if [[ $remove_java == "y" ]]; then
     java_packages=$(dpkg --get-selections | grep "jdk" | awk '{ print $1 }')
     if [[ -n $java_packages ]]; then
         echo "Uninstalling Java packages..."
-        sudo apt-get autoremove openjdk* -y > /dev/null
+        sudo apt remove --purge -y $java_packages
+        sudo apt autoremove -y
     else
         echo "No Java packages installed."
     fi
-fi
+    fi
+
 
 
     
