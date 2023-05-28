@@ -5,11 +5,11 @@
 install_rng_tools() {
     sudo apt install -y rng-tools
     if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
-        # Replace the line with the new value
-        sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
+       # Replace the line with the new value
+       sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
     else
-        # Add the line if it doesn't exist
-        echo "HRNGDEVICE=/dev/urandom" | sudo tee -a /etc/default/rng-tools
+       # Add the line if it doesn't exist
+       sudo echo "HRNGDEVICE=/dev/urandom" | sudo tee -a /etc/default/rng-tools
     fi
     sudo systemctl restart rng-tools
     sudo systemctl stop haveged
@@ -22,33 +22,34 @@ install_unifi_apt() {
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
     echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
     sudo apt update
-    sudo apt install -y openjdk-11-jre-headless
+    # sudo apt install -y openjdk-11-jre-headless
     export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
     export PATH=$PATH:$JAVA_HOME/bin
     install_rng_tools
     sudo apt install -y unifi
-    sudo apt -fy install
+    sudo apt install -fy
     sudo systemctl start unifi
     sudo systemctl enable unifi
     echo "UniFi Controller has been installed and started."
 }
 
+# Function to install UniFi Controller manually
 install_unifi_manual() {
     # Check if unifi_sysvinit_all.deb file exists
     if [ -f unifi_sysvinit_all.deb ]; then
-        echo "Previous UniFi Controller package found. Removing..."
-        rm unifi_sysvinit_all.deb
+      echo "Previous UniFi Controller package found. Removing..."
+      rm unifi_sysvinit_all.deb
     fi
 
     read -p "Enter the UniFi Controller version you want to install (e.g., 7.3.83): " version
     download_url="https://dl.ui.com/unifi/$version/unifi_sysvinit_all.deb"
-    response=$(curl -s -o /dev/null -I -w "%{http_code}" "$download_url")
+    response=$(curl -s -o /dev/null -I -w "%{http_code}" $download_url)
     if [[ $response -eq 200 ]]; then
         # Download UniFi Controller package
-        wget -c "$download_url" -O unifi_sysvinit_all.deb
+        wget -c $download_url -O unifi_sysvinit_all.deb
         
         # Install dependencies (Java and MongoDB)
-        if dpkg --compare-versions "$version" lt "7.3.76"; then
+        if [[ "$version" < "7.3.76" ]]; then
             # Install Java 8
             sudo apt install -y openjdk-8-jre-headless
             export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)
@@ -65,11 +66,11 @@ install_unifi_manual() {
         echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
         sudo apt update
         sudo apt install -y mongodb
-        # Install rng-tools
-        install_rng_tools
+
         # Install UniFi Controller
         sudo dpkg -i unifi_sysvinit_all.deb
-        sudo apt -fy install
+        install_rng_tools
+        sudo apt install -fy
         sudo systemctl start unifi
         sudo systemctl enable unifi
         echo "UniFi Controller has been installed and started."
@@ -79,6 +80,8 @@ install_unifi_manual() {
     fi
 }
 
+
+# Function to clean up UniFi Controller
 cleanup_unifi() {
     read -p "Do you want to remove Java as well? (y/n): " remove_java
     if [[ $remove_java == "y" ]]; then
@@ -107,18 +110,22 @@ cleanup_unifi() {
     fi
     fi
     
+    read -p "Do you want to remove rng-tools as well? (y/n): " remove_rngtools
+    if [[ $remove_rngtools == "y" ]]; then
     # Get the list of installed rng-tools packages
     rngtools_packages=$(dpkg -l | grep rng-tools | awk '{ print $2 }')
     # Check if there are rng-tools packages installed
     if [[ -n $rngtools_packages ]]; then
-        echo "Uninstalling rng-tools packages..."
         # Enable haveged service to generate random numbers
+        echo "Enable haveged service"
         sudo systemctl enable haveged
         sudo systemctl start haveged
         # Remove rng-tools packages
+        echo "Uninstalling rng-tools packages..."
         sudo apt-get remove --purge -y $rngtools_packages
     else
         echo "No rng-tools packages installed."
+    fi
     fi
 
     # Get the list of installed UniFi Controller packages
@@ -142,10 +149,11 @@ cleanup_unifi() {
     exit 0
 }
 
+# Show menu and ask for user input
 echo -e "\n-- UniFi Controller Installation --\n"
 echo "1. Install via apt"
 echo "2. Install custom version"
-echo "3. Clean Up (Remove installed UniFi Controller packages)"
+echo "3. Uninstall"
 echo "4. Cancel"
 echo -e "5. Help\n"
 read -p "Enter your choice (1-5): " choice
@@ -168,7 +176,7 @@ case $choice in
         echo "Help:"
         echo "1. Install via apt: Installs UniFi Controller using the official repository."
         echo "2. Install custom version: Allows you to choose a custom version and update the UniFi Controller by downloading and manually installing the .deb package."
-        echo "3. Clean Up: Removes installed UniFi Controller packages and files."
+        echo "3. Uninstall: Removes installed UniFi Controller packages and files."
         echo "4. Cancel: Exits the installation process without making any changes."
         echo "5. Help: Displays this help message."
         exit 0
