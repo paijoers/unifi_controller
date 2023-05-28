@@ -148,7 +148,7 @@ cleanup_unifi() {
 echo -e "\n-- UniFi Controller Installation --\n"
 echo "1. Install via apt"
 echo "2. Install custom version"
-echo "3. Clean Up (Remove installed UniFi Controller packages)"
+echo "3. Uninstall"
 echo "4. Cancel"
 echo -e "5. Help\n"
 read -p "Enter your choice (1-5): " choice
@@ -171,7 +171,7 @@ case $choice in
         echo "Help:"
         echo "1. Install via apt: Installs UniFi Controller using the official repository."
         echo "2. Install custom version: Allows you to choose a custom version and update the UniFi Controller by downloading and manually installing the .deb package."
-        echo "3. Clean Up: Removes installed UniFi Controller packages and files."
+        echo "3. Uninstall: Removes installed UniFi Controller packages and files."
         echo "4. Cancel: Exits the installation process without making any changes."
         echo "5. Help: Displays this help message."
         exit 0
