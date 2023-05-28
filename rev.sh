@@ -25,7 +25,6 @@ install_unifi_apt() {
     install_rng_tools
     sudo apt-get install -y unifi
     sudo apt-get install -fy
-    # sudo apt-get install -y openjdk-11-jre-headless
     # Get the Java installation path
     java_path=$(update-java-alternatives --list | awk '/java-/{print $3}')
     # Check if Java is installed
@@ -36,8 +35,6 @@ install_unifi_apt() {
     echo "JAVA_HOME is set to $JAVA_HOME"
     sudo sh -c "echo 'JAVA_HOME=$JAVA_HOME' >> /etc/environment"
     source /etc/environment
-    else
-    echo "Java is not installed."
     fi
     sudo systemctl start unifi
     sudo systemctl enable unifi
@@ -94,9 +91,12 @@ install_unifi_manual() {
 
 # Function to clean up UniFi Controller
 cleanup_unifi() {
+    # Stop UniFi Controller service
+    sudo systemctl stop unifi
+    # Remove java
     read -p "Do you want to remove Java as well? (y/n): " remove_java
     if [[ $remove_java == "y" ]]; then
-    java_packages=$(dpkg --get-selections | grep "jdk" | awk '{ print $1 }')
+    java_packages=$(dpkg --get-selections | grep openJDK | awk '{ print $1 }')
     if [[ -n $java_packages ]]; then
         echo "Uninstalling Java packages..."
         sudo apt-get remove --purge -y $java_packages
@@ -105,9 +105,6 @@ cleanup_unifi() {
         echo "No Java packages installed."
     fi
     fi
-
-
-
     
     read -p "Do you want to remove mongodb as well? (y/n): " remove_mongodb
     if [[ $remove_mongodb == "y" ]]; then
@@ -146,8 +143,6 @@ cleanup_unifi() {
     # Check if there are UniFi Controller packages installed
     if [[ -n $unifi_packages ]]; then
         echo "Uninstalling UniFi Controller packages..."
-        # Stop UniFi Controller service
-        sudo systemctl stop unifi
         # Disable UniFi Controller service at boot
         sudo systemctl disable unifi
         # Remove UniFi Controller packages
