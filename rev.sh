@@ -3,17 +3,24 @@
 # Tested OS: Armbian 20.10 (Ubuntu Bionic) & Armbian 21.08.1 (Ubuntu Focal)
 
 install_rng_tools() {
-    sudo apt-get install -y rng-tools
-    if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
-       # Replace the line with the new value
-       sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
+    rngtools_packages=$(dpkg -l | grep rng-tools | awk '{ print $2 }')
+    # Check if there are rng-tools packages installed
+    if [[ -n $rngtools_packages ]]; then
+        echo "rng-tools already installed..."
     else
-       # Add the line if it doesn't exist
-       sudo echo "HRNGDEVICE=/dev/urandom" | sudo tee -a /etc/default/rng-tools
+        echo "Installing rng-tools.."
+        sudo apt-get install -y rng-tools
+        if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
+           # Replace the line with the new value
+           sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
+        else
+           # Add the line if it doesn't exist
+           sudo echo "HRNGDEVICE=/dev/urandom" | sudo tee -a /etc/default/rng-tools
+        fi
+        sudo systemctl restart rng-tools
+        sudo systemctl stop haveged
+        sudo systemctl disable haveged
     fi
-    sudo systemctl restart rng-tools
-    sudo systemctl stop haveged
-    sudo systemctl disable haveged
 }
 
 install_unifi_apt() {
@@ -71,9 +78,16 @@ install_unifi_manual() {
             export PATH=$PATH:$JAVA_HOME/bin
         fi
         
-        # Install MongoDB
-        
-        sudo apt-get install -y mongodb
+        # Check if there are MongoDB packages installed
+        mongodb_packages=$(dpkg -l | grep mongodb | awk '{ print $2 }')
+        # Get the list of installed MongoDB packages
+        if [[ -n $mongodb_packages ]]; then
+           echo "Mongodb already installed"
+           sudo apt-get install -y mongodb
+        else
+           echo "Installing MongoDB.."
+           sudo apt-get install -y mongodb
+        fi
 
         # Install UniFi Controller
         sudo dpkg -i unifi_sysvinit_all.deb
