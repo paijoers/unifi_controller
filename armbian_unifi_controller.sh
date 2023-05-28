@@ -109,18 +109,22 @@ cleanup_unifi() {
     fi
     fi
     
+    read -p "Do you want to remove rng-tools as well? (y/n): " remove_rngtools
+    if [[ $remove_rngtools == "y" ]]; then
     # Get the list of installed rng-tools packages
     rngtools_packages=$(dpkg -l | grep rng-tools | awk '{ print $2 }')
     # Check if there are rng-tools packages installed
     if [[ -n $rngtools_packages ]]; then
-        echo "Uninstalling rng-tools packages..."
         # Enable haveged service to generate random numbers
+        echo "Enable haveged service"
         sudo systemctl enable haveged
         sudo systemctl start haveged
         # Remove rng-tools packages
+        echo "Uninstalling rng-tools packages..."
         sudo apt-get remove --purge -y $rngtools_packages
     else
         echo "No rng-tools packages installed."
+    fi
     fi
 
     # Get the list of installed UniFi Controller packages
