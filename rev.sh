@@ -100,7 +100,7 @@ cleanup_unifi() {
         if [[ -n $java_packages ]]; then
             echo "Uninstalling Java packages..."
             sudo apt-get remove --purge -y $java_packages
-            sudo apt autoremove -y
+            sudo apt-get autoremove -y
         else
             echo "No Java packages installed."
         fi
