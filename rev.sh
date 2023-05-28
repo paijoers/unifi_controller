@@ -95,16 +95,17 @@ install_unifi_manual() {
 # Function to clean up UniFi Controller
 cleanup_unifi() {
     read -p "Do you want to remove Java as well? (y/n): " remove_java
-    if [[ $remove_java == "y" ]]; then
-        java_packages=$(dpkg -l | grep -E "openjdk" | awk '{ print $2 }')
-        if [[ -n $java_packages ]]; then
-            echo "Uninstalling Java packages..."
-            sudo apt-get remove --purge -y $java_packages
-            sudo apt-get autoremove -y
-        else
-            echo "No Java packages installed."
-        fi
+if [[ $remove_java == "y" ]]; then
+    java_packages=$(dpkg -l | grep -E "openjdk-[0-9]+-jdk|oracle-java[0-9]+-installer" | awk '{ print $2 }')
+    if [[ -n $java_packages ]]; then
+        echo "Uninstalling Java packages..."
+        sudo apt remove --purge -y $java_packages
+        sudo apt autoremove -y
+    else
+        echo "No Java packages installed."
     fi
+fi
+
 
     
     read -p "Do you want to remove mongodb as well? (y/n): " remove_mongodb
