@@ -87,6 +87,8 @@ cleanup_unifi() {
         if [[ -n $java_packages ]]; then
         sudo apt-get remove --purge -y $java_packages
         sudo apt autoremove -y
+        else
+        echo "Java not isntalled"
         fi
     fi
     
