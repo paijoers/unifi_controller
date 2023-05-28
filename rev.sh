@@ -83,8 +83,8 @@ install_unifi_manual() {
 cleanup_unifi() {
     read -p "Do you want to remove Java as well? (y/n): " remove_java
     if [[ $remove_java == "y" ]]; then
-        sudo update-alternatives --config java
-        sudo update-alternatives --remove-all java
+        java_packages=$(dpkg -l | grep -E "openjdk-[0-9]+-jdk|oracle-java[0-9]+-installer" | awk '{ print $2 }')
+        sudo apt-get remove --purge -y $java_packages
         sudo apt autoremove -y
     fi
     
