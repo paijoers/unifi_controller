@@ -29,6 +29,7 @@ install_unifi_apt() {
     export PATH=$PATH:$JAVA_HOME/bin
     install_rng_tools
     sudo apt install -y unifi
+    sudo apt -fy install
     sudo systemctl start unifi
     sudo systemctl enable unifi
     echo "UniFi Controller has been installed and started."
