@@ -70,6 +70,8 @@ install_unifi_manual() {
         sudo dpkg -i unifi_sysvinit_all.deb
         install_rng_tools
         sudo apt install -fy
+        sudo systemctl start unifi
+        sudo systemctl enable unifi
         echo "UniFi Controller has been installed and started."
     else
         echo "Invalid version or Link not found. Aborting installation."
