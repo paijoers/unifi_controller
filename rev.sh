@@ -110,6 +110,8 @@ rngtools_packages=$(dpkg -l | grep rng-tools | awk '{ print $2 }')
 if [[ -n $rngtools_packages ]]; then
   echo "Uninstalling rng-tools packages..."
   # Remove rng-tools packages
+  sudo systemctl enable haveged
+  sudo systemctl start haveged
   sudo apt-get remove --purge -y $rngtools_packages
 else
   echo "No rng-tools packages installed."
