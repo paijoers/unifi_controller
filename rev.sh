@@ -83,7 +83,7 @@ install_unifi_manual() {
 # Function to clean up UniFi Controller
 cleanup_unifi() {
     # Stop UniFi Controller service
-    echo "Stopping unifi services"
+    echo -e "Stopping unifi services\n"
     sudo systemctl stop unifi
 
     # Remove java
