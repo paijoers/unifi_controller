@@ -2,8 +2,6 @@
 # @nys.pjr 
 # Tested OS: Armbian 20.10 Ubuntu Bionic
 
-set -e
-
 install_rng_tools() {
     sudo apt install -y rng-tools
     if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
