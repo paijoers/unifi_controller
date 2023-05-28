@@ -25,17 +25,6 @@ install_unifi_apt() {
     install_rng_tools
     sudo apt-get install -y unifi
     sudo apt-get install -fy
-    # Get the Java installation path
-    java_path=$(update-java-alternatives --list | awk '/java-/{print $3}')
-    # Check if Java is installed
-    if [[ -n $java_path ]]; then
-    # Set the JAVA_HOME environment variable
-    export JAVA_HOME=$java_path
-    # Update the system-wide environment variables
-    echo "JAVA_HOME is set to $JAVA_HOME"
-    sudo sh -c "echo 'JAVA_HOME=$JAVA_HOME' >> /etc/environment"
-    source /etc/environment
-    fi
     sudo systemctl start unifi
     sudo systemctl enable unifi
     echo "UniFi Controller has been installed and started."
