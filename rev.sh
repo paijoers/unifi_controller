@@ -15,7 +15,7 @@ install_rng_tools() {
            sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
         else
            # Add the line if it doesn't exist
-           sudo echo "HRNGDEVICE=/dev/urandom" | sudo tee -a /etc/default/rng-tools
+           echo "HRNGDEVICE=/dev/urandom" | sudo tee -a /etc/default/rng-tools
         fi
         sudo systemctl restart rng-tools
         sudo systemctl stop haveged
@@ -25,7 +25,7 @@ install_rng_tools() {
 
 install_unifi_apt() {
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
-    wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+    sudo wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
     echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
     sudo apt-get update
@@ -54,14 +54,14 @@ install_unifi_manual() {
     response=$(curl -s -o /dev/null -I -w "%{http_code}" $download_url)
     if [[ $response -eq 200 ]]; then
         sudo rm /etc/apt/sources.list.d/unifi*
-        wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+        sudo wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
         echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
         sudo apt-get update
         
         # Download UniFi Controller package
         if [ -f unifi_sysvinit_all.deb ]; then
            echo "Previous UniFi Controller package found. Removing..."
-           rm unifi_sysvinit_all.deb
+           sudo rm unifi_sysvinit_all.deb
         fi
         wget -c $download_url -O unifi_sysvinit_all.deb
         
@@ -111,7 +111,6 @@ install_unifi_manual() {
        exit 1
      fi
 }
-
 
 # Function to clean up UniFi Controller
 cleanup_unifi() {
