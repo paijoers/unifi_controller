@@ -22,12 +22,23 @@ install_unifi_apt() {
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
     echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
     sudo apt update
-    # sudo apt install -y openjdk-11-jre-headless
-    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
-    export PATH=$PATH:$JAVA_HOME/bin
     install_rng_tools
     sudo apt install -y unifi
     sudo apt install -fy
+    # sudo apt install -y openjdk-11-jre-headless
+    # Get the Java installation path
+    java_path=$(update-java-alternatives --list | awk '/java-/{print $3}')
+    # Check if Java is installed
+    if [[ -n $java_path ]]; then
+    # Set the JAVA_HOME environment variable
+    export JAVA_HOME=$java_path
+    # Update the system-wide environment variables
+    echo "JAVA_HOME is set to $JAVA_HOME"
+    sudo sh -c "echo 'JAVA_HOME=$JAVA_HOME' >> /etc/environment"
+    source /etc/environment
+    else
+    echo "Java is not installed."
+    fi
     sudo systemctl start unifi
     sudo systemctl enable unifi
     echo "UniFi Controller has been installed and started."
