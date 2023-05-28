@@ -5,7 +5,7 @@
 set -e
 
 install_rng_tools() {
-    sudo apt install -y rng-tools # || { echo "Failed to install rng-tools."; exit 1; }
+    sudo apt install -y rng-tools
     if grep -q "^HRNGDEVICE=" /etc/default/rng-tools; then
         # Replace the line with the new value
         sudo sed -i "s|^HRNGDEVICE=.*|HRNGDEVICE=/dev/urandom|" /etc/default/rng-tools
@@ -24,11 +24,11 @@ install_unifi_apt() {
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
     echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
     sudo apt update
-    sudo apt install -y openjdk-11-jre-headless # || { echo "Failed to install openjdk-11-jre-headless."; exit 1; }
+    sudo apt install -y openjdk-11-jre-headless
     export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
     export PATH=$PATH:$JAVA_HOME/bin
     install_rng_tools
-    sudo apt install -y unifi # || { echo "Failed to install unifi."; exit 1; }
+    sudo apt install -y unifi
     sudo systemctl start unifi
     sudo systemctl enable unifi
     echo "UniFi Controller has been installed and started."
@@ -51,12 +51,12 @@ install_unifi_manual() {
         # Install dependencies (Java and MongoDB)
         if dpkg --compare-versions "$version" lt "7.3.76"; then
             # Install Java 8
-            sudo apt install -y openjdk-8-jre-headless # || { echo "Failed to install openjdk-8-jre-headless."; exit 1; }
+            sudo apt install -y openjdk-8-jre-headless
             export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)
             export PATH=$PATH:$JAVA_HOME/bin
         else
             # Install Java 11
-            sudo apt install -y openjdk-11-jre-headless # || { echo "Failed to install openjdk-11-jre-headless."; exit 1; }
+            sudo apt install -y openjdk-11-jre-headless
             export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
             export PATH=$PATH:$JAVA_HOME/bin
         fi
@@ -65,7 +65,7 @@ install_unifi_manual() {
         wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
         echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
         sudo apt update
-        sudo apt install -y mongodb # || { echo "Failed to install mongodb."; exit 1; }
+        sudo apt install -y mongodb
 
         # Install UniFi Controller
         sudo dpkg -i unifi_sysvinit_all.deb
