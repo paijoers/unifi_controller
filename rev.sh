@@ -90,7 +90,7 @@ cleanup_unifi() {
         fi
     fi
     
-    sudo systemctl stop mongod
+    # sudo systemctl stop mongod
     sudo apt purge -y unifi
     sudo apt purge -y mongodb*
     sudo rm -rf /usr/lib/unifi
