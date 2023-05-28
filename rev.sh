@@ -99,8 +99,8 @@ cleanup_unifi() {
     java_packages=$(dpkg --get-selections | grep "jdk" | awk '{ print $1 }')
     if [[ -n $java_packages ]]; then
         echo "Uninstalling Java packages..."
-        sudo apt remove --purge -y $java_packages
-        sudo apt autoremove -y
+        sudo apt-get remove --purge -y $java_packages
+        sudo apt-get autoremove -y
     else
         echo "No Java packages installed."
     fi
