@@ -93,7 +93,10 @@ cleanup_unifi() {
             echo "No Java packages installed."
         fi
     fi
-
+    
+    
+    read -p "Do you want to remove mongodb as well? (y/n): " remove_mongodb
+    if [[ $remove_mongodb == "y" ]]; then
     # Check if there are MongoDB packages installed
     mongodb_packages=$(dpkg -l | grep mongodb | awk '{ print $2 }')
     # Get the list of installed MongoDB packages
@@ -104,7 +107,8 @@ cleanup_unifi() {
     else
         echo "No MongoDB packages installed."
     fi
-
+    fi
+    
     # Get the list of installed rng-tools packages
     rngtools_packages=$(dpkg -l | grep rng-tools | awk '{ print $2 }')
     # Check if there are rng-tools packages installed
