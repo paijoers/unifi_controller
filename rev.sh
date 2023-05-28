@@ -83,10 +83,11 @@ install_unifi_manual() {
 # Function to clean up UniFi Controller
 cleanup_unifi() {
     # Stop UniFi Controller service
+    echo "Stopping unifi services"
     sudo systemctl stop unifi
 
     # Remove java
-   read -p "Do you want to remove Java as well? (y/n): " remove_java
+    read -p "Do you want to remove Java as well? (y/n): " remove_java
     if [[ $remove_java == "y" ]]; then
         java_packages=$(dpkg --list | grep jdk | awk '{ print $2 }')
         if [[ -n $java_packages ]]; then
