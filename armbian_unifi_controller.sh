@@ -1,6 +1,6 @@
 #!/bin/bash
 # @nys.pjr 
-# Tested OS: Armbian 20.10 Ubuntu Bionic
+# Tested OS: Armbian 20.10 Ubuntu Bionic & Armbian 21.08.1 Ubuntu Focal
 
 install_rng_tools() {
     sudo apt install -y rng-tools
