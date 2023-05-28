@@ -66,11 +66,11 @@ install_unifi_manual() {
         echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
         sudo apt update
         sudo apt install -y mongodb
-
+        # Install rng-tools
+        install_rng_tools
         # Install UniFi Controller
         sudo dpkg -i unifi_sysvinit_all.deb
-        install_rng_tools
-        sudo apt install -fy
+        sudo apt -fy install
         sudo systemctl start unifi
         sudo systemctl enable unifi
         echo "UniFi Controller has been installed and started."
