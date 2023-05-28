@@ -85,55 +85,56 @@ cleanup_unifi() {
     if [[ $remove_java == "y" ]]; then
         java_packages=$(dpkg -l | grep -E "openjdk-[0-9]+-jdk|oracle-java[0-9]+-installer" | awk '{ print $2 }')
         if [[ -n $java_packages ]]; then
-        echo "Uninstalling Java packages..."
-        sudo apt-get remove --purge -y $java_packages
-        sudo apt autoremove -y
+            echo "Uninstalling Java packages..."
+            sudo apt-get remove --purge -y $java_packages
+            sudo apt autoremove -y
         else
-        echo "No Java packages installed."
+            echo "No Java packages installed."
         fi
     fi
 
-# Check if there are MongoDB packages installed
-mongodb_packages=$(dpkg -l | grep mongodb | awk '{ print $2 }')
-# Get the list of installed MongoDB packages
-if [[ -n $mongodb_packages ]]; then
-  echo "Uninstalling MongoDB packages..."
-  # Remove MongoDB packages
-  sudo apt-get remove --purge -y $mongodb_packages
-else
-  echo "No MongoDB packages installed."
-fi
+    # Check if there are MongoDB packages installed
+    mongodb_packages=$(dpkg -l | grep mongodb | awk '{ print $2 }')
+    # Get the list of installed MongoDB packages
+    if [[ -n $mongodb_packages ]]; then
+        echo "Uninstalling MongoDB packages..."
+        # Remove MongoDB packages
+        sudo apt-get remove --purge -y $mongodb_packages
+    else
+        echo "No MongoDB packages installed."
+    fi
 
-# Get the list of installed rng-tools packages
-rngtools_packages=$(dpkg -l | grep rng-tools | awk '{ print $2 }')
-# Check if there are rng-tools packages installed
-if [[ -n $rngtools_packages ]]; then
-  echo "Uninstalling rng-tools packages..."
-  # Remove rng-tools packages
-  sudo systemctl enable haveged
-  sudo systemctl start haveged
-  sudo apt-get remove --purge -y $rngtools_packages
-else
-  echo "No rng-tools packages installed."
-fi
+    # Get the list of installed rng-tools packages
+    rngtools_packages=$(dpkg -l | grep rng-tools | awk '{ print $2 }')
+    # Check if there are rng-tools packages installed
+    if [[ -n $rngtools_packages ]]; then
+        echo "Uninstalling rng-tools packages..."
+        # Enable haveged service to generate random numbers
+        sudo systemctl enable haveged
+        sudo systemctl start haveged
+        # Remove rng-tools packages
+        sudo apt-get remove --purge -y $rngtools_packages
+    else
+        echo "No rng-tools packages installed."
+    fi
 
-# Get the list of installed UniFi Controller packages
-unifi_packages=$(dpkg -l | grep unifi | awk '{ print $2 }')
-# Check if there are UniFi Controller packages installed
-if [[ -n $unifi_packages ]]; then
-  echo "Uninstalling UniFi Controller packages..."
-  # Stop UniFi Controller service
-  sudo systemctl stop unifi
-  # Disable UniFi Controller service at boot
-  sudo systemctl disable unifi
-  # Remove UniFi Controller packages
-  sudo apt-get remove --purge -y $unifi_packages
-else
-  echo "No UniFi Controller packages installed."
-fi
+    # Get the list of installed UniFi Controller packages
+    unifi_packages=$(dpkg -l | grep unifi | awk '{ print $2 }')
+    # Check if there are UniFi Controller packages installed
+    if [[ -n $unifi_packages ]]; then
+        echo "Uninstalling UniFi Controller packages..."
+        # Stop UniFi Controller service
+        sudo systemctl stop unifi
+        # Disable UniFi Controller service at boot
+        sudo systemctl disable unifi
+        # Remove UniFi Controller packages
+        sudo apt-get remove --purge -y $unifi_packages
+    else
+        echo "No UniFi Controller packages installed."
+    fi
 
-# Clean up unused packages
-sudo apt-get autoremove -y
+    # Clean up unused packages
+    sudo apt-get autoremove -y
 
     exit 0
 }
