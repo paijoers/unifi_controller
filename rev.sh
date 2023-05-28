@@ -46,8 +46,7 @@ install_unifi_manual() {
     download_url="https://dl.ui.com/unifi/$version/unifi_sysvinit_all.deb"
     response=$(curl -s -o /dev/null -I -w "%{http_code}" $download_url)
     if [[ $response -eq 200 ]]; then
-        
-        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
+        sudo rm /etc/apt/sources.list.d/unifi*
         wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
         echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
         sudo apt-get update
