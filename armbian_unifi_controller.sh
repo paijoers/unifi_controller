@@ -22,11 +22,9 @@ install_unifi_apt() {
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
     echo "deb https://www.ui.com/downloads/unifi/debian stable ubiquiti" | sudo tee /etc/apt/sources.list.d/unifi.list
     sudo apt-get update
-    sudo apt-get install -y openjdk-11-jre-headless
-    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)
-    export PATH=$PATH:$JAVA_HOME/bin
     install_rng_tools
     sudo apt-get install -y unifi
+    sudo apt-get install -fy
     sudo systemctl start unifi
     sudo systemctl enable unifi
     echo "UniFi Controller has been installed and started."
@@ -34,17 +32,21 @@ install_unifi_apt() {
 
 # Function to install UniFi Controller manually
 install_unifi_manual() {
-    # Check if unifi_sysvinit_all.deb file exists
-    if [ -f unifi_sysvinit_all.deb ]; then
-      echo "Previous UniFi Controller package found. Removing..."
-      rm unifi_sysvinit_all.deb
-    fi
-
     read -p "Enter the UniFi Controller version you want to install (e.g., 7.3.83): " version
     download_url="https://dl.ui.com/unifi/$version/unifi_sysvinit_all.deb"
     response=$(curl -s -o /dev/null -I -w "%{http_code}" $download_url)
     if [[ $response -eq 200 ]]; then
+        
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 06E85760C0A52C50
+        wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+        echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+        sudo apt-get update
+        
         # Download UniFi Controller package
+        if [ -f unifi_sysvinit_all.deb ]; then
+           echo "Previous UniFi Controller package found. Removing..."
+           rm unifi_sysvinit_all.deb
+        fi
         wget -c $download_url -O unifi_sysvinit_all.deb
         
         # Install dependencies (Java and MongoDB)
@@ -61,9 +63,7 @@ install_unifi_manual() {
         fi
         
         # Install MongoDB
-        wget -O - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-        echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-        sudo apt-get update
+        
         sudo apt-get install -y mongodb
 
         # Install UniFi Controller
@@ -82,9 +82,15 @@ install_unifi_manual() {
 
 # Function to clean up UniFi Controller
 cleanup_unifi() {
+    # Stop UniFi Controller service
+    echo -e "Stopping unifi services..\n"
+    sudo systemctl stop unifi
+    sudo systemctl disable unifi
+
+    # Remove java
     read -p "Do you want to remove Java as well? (y/n): " remove_java
     if [[ $remove_java == "y" ]]; then
-        java_packages=$(dpkg -l | grep -E "openjdk-[0-9]+-jdk|oracle-java[0-9]+-installer" | awk '{ print $2 }')
+        java_packages=$(dpkg --list | grep jdk | awk '{ print $2 }')
         if [[ -n $java_packages ]]; then
             echo "Uninstalling Java packages..."
             sudo apt-get remove --purge -y $java_packages
@@ -94,7 +100,6 @@ cleanup_unifi() {
         fi
     fi
     
-    
     read -p "Do you want to remove mongodb as well? (y/n): " remove_mongodb
     if [[ $remove_mongodb == "y" ]]; then
     # Check if there are MongoDB packages installed
@@ -103,6 +108,8 @@ cleanup_unifi() {
     if [[ -n $mongodb_packages ]]; then
         echo "Uninstalling MongoDB packages..."
         # Remove MongoDB packages
+        sudo systemctl stop mongodb
+        sudo rm /etc/apt/sources.list.d/mongodb*
         sudo apt-get remove --purge -y $mongodb_packages
     else
         echo "No MongoDB packages installed."
@@ -132,11 +139,8 @@ cleanup_unifi() {
     # Check if there are UniFi Controller packages installed
     if [[ -n $unifi_packages ]]; then
         echo "Uninstalling UniFi Controller packages..."
-        # Stop UniFi Controller service
-        sudo systemctl stop unifi
-        # Disable UniFi Controller service at boot
-        sudo systemctl disable unifi
         # Remove UniFi Controller packages
+        sudo rm /etc/apt/sources.list.d/unifi*
         sudo apt-get remove --purge -y $unifi_packages
     else
         echo "No UniFi Controller packages installed."
