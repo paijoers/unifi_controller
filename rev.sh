@@ -96,17 +96,16 @@ install_unifi_manual() {
 cleanup_unifi() {
     read -p "Do you want to remove Java as well? (y/n): " remove_java
     if [[ $remove_java == "y" ]]; then
-    java_packages=$(apt-cache --installed search "openjdk" | awk '{ print $1 }')
-    if [[ -n $java_packages ]]; then
-        echo "Uninstalling Java packages..."
-        sudo apt-get remove --purge -y $java_packages
-        sudo apt-get autoremove -y
+    java_version=$(update-java-alternatives --list | awk '{ print $3 }' | grep -oP "(?<=java-).*")
+    if [[ -n $java_version ]]; then
+        echo "Uninstalling Java..."
+        sudo update-java-alternatives --remove-all
+        sudo apt-get remove --purge -y openjdk-$java_version-jdk
+        sudo apt autoremove -y
     else
         echo "No Java packages installed."
     fi
     fi
-
-    
     
     read -p "Do you want to remove mongodb as well? (y/n): " remove_mongodb
     if [[ $remove_mongodb == "y" ]]; then
