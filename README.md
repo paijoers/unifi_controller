@@ -1,3 +1,3 @@
 # unifi_controller
 
-Tested on Armbian_20.10_Arm-64_bionic_current_5.9.0
+Tested on Armbian 20.10 (Ubuntu Bionic) & Armbian 21.08.1 (Ubuntu Focal)
